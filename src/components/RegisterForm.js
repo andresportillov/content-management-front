@@ -56,13 +56,15 @@ function RegisterForm({ onSubmit }) {
       </div>
       <div className="form-group">
         <label>Role</label>
-        <input
-          type="role"
+        <select
           className="form-control"
           value={role}
           onChange={(e) => setRole(e.target.value)}
           required
-        />
+        >
+          <option value="lector">Lector</option>
+          <option value="creador">Creador</option>
+        </select>
       </div>
       {error && <p>{error}</p>}
       <button type="submit" className="btn btn-primary">Register</button>

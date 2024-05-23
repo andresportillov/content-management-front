@@ -1,0 +1,33 @@
+/* Content.css */
+
+/* Estilos para el contenedor principal */
+.contenidos-lista {
+    margin-top: 20px;
+  }
+  
+  /* Estilos para cada elemento de contenido */
+  .contenido-item {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .contenido-item h3 {
+    margin-top: 0;
+  }
+  
+  .contenido-item img {
+    max-width: 100%;
+    border-radius: 5px;
+  }
+  
+  .contenido-item video {
+    max-width: 100%;
+    border-radius: 5px;
+  }
+  
+  .contenido-item pre {
+    white-space: pre-wrap;
+  }
+  
