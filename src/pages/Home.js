@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import Content from '../components/Content';
-import contentService from '../services/contentService';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import Content from "../components/Content";
+import { useGetContent } from "../hooks/useGetContent";
+import { useSession } from "../hooks/useSession";
 
 function Search({ onSearch }) {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
 
   const handleChange = (event) => {
     setQuery(event.target.value);
@@ -26,7 +27,9 @@ function Search({ onSearch }) {
           onChange={handleChange}
         />
         <div className="input-group-append">
-          <button type="submit" className="btn btn-outline-success">Search</button>
+          <button type="submit" className="btn btn-outline-success">
+            Search
+          </button>
         </div>
       </div>
     </form>
@@ -34,41 +37,135 @@ function Search({ onSearch }) {
 }
 
 function Home() {
-  const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem('token'));
-  const [content, setContent] = useState([]);
+  const { content, handleSearch, error } = useGetContent();
+  const { isLoggedIn, handleLogout, user } = useSession();
 
-  // Función para desloguear al usuario
-  const handleLogout = () => {
-    // Limpiar el token del almacenamiento local
-    localStorage.removeItem('token');
-    // Actualizar el estado para indicar que el usuario ha cerrado sesión
-    setIsLoggedIn(false);
-  };
+  // Crear componente para mostrat el total de items por tematica +100 imagenes
 
-  const handleSearch = async (query) => {
-    try {
-      const response = await contentService.searchByTopicOrName(query);
-      setContent(response); // Actualiza el estado del contenido con la respuesta del servicio
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // Crear Endpoints para lectura de datos de usuarios, dentro del hook useSession se deberia obtener los datos del usuario minimamente si es lector o creador
+  // Si es creador mostrat boton para acceder al formulario de crear contenido
+  // Formulario de agregar un contenido siendo creador
+  // Validar que el contenido creado tenga una categoria valida para la tematica correspondiente
+  // Unit tests
+
+  // Si es usuario es un creador no mostrar los documentos solo texto
+
+  // La prueba tecnica es un culo explicando la diferencia entre tematica y categoria
 
   return (
     <>
       {isLoggedIn ? (
-        <div style={{ backgroundColor: '#f2f2f2', minHeight: '100vh', padding: '20px' }}>
+        <div style={{ backgroundColor: "#f2f2f2", minHeight: "100vh" }}>
           <nav className="navbar navbar-dark bg-dark">
             <div className="container d-flex">
-              <Link to="/" className="navbar-brand">Mi App</Link>
+              <Link to="/" className="navbar-brand">
+                Mi App
+              </Link>
               <Search onSearch={handleSearch} />
-              <button className="btn btn-outline-light" onClick={handleLogout}>Logout</button>
+              {user?.role !== "lector" && (
+                <>
+                  <button
+                    type="button"
+                    class="btn btn-primary"
+                    data-bs-toggle="modal"
+                    data-bs-target="#exampleModal"
+                  >
+                    Launch demo modal
+                  </button>
+
+                  <div
+                    class="modal fade"
+                    id="exampleModal"
+                    tabindex="-1"
+                    aria-labelledby="exampleModalLabel"
+                    aria-hidden="true"
+                  >
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h1 class="modal-title fs-5" id="exampleModalLabel">
+                            Modal title
+                          </h1>
+                          <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"
+                          ></button>
+                        </div>
+                        <form>
+                          <div class="modal-body">
+                            <input />
+                            <input />
+                            <input />
+                          </div>
+                          <div class="modal-footer">
+                            <button
+                              type="button"
+                              class="btn btn-secondary"
+                              data-bs-dismiss="modal"
+                            >
+                              Close
+                            </button>
+                            <button type="button" class="btn btn-primary">
+                              Save changes
+                            </button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+              <button
+                type="button"
+                className="btn btn-outline-light"
+                onClick={handleLogout}
+              >
+                Logout
+              </button>
             </div>
           </nav>
           <div className="container">
             <h2 className="mt-4">Bienvenido a la Página de Inicio</h2>
+            <div style={{ display: "flex", margin: " 20px 0" }}>
+              <div
+                style={{
+                  background: "gray",
+                  marginRight: "8px",
+                  borderRadius: "8px",
+                  padding: "8px",
+                  color: "white",
+                }}
+              >
+                +100 imagenes
+              </div>
+              <div
+                style={{
+                  background: "gray",
+                  marginRight: "8px",
+                  borderRadius: "8px",
+                  padding: "8px",
+                  color: "white",
+                }}
+              >
+                +100 videos
+              </div>
+              <div
+                style={{
+                  background: "gray",
+                  marginRight: "8px",
+                  borderRadius: "8px",
+                  padding: "8px",
+                  color: "white",
+                }}
+              >
+                +100 documentos
+              </div>
+            </div>
             <p>Aquí puedes agregar el contenido de tu página de inicio.</p>
-            <Content content={content} /> {/* Pasa el estado content como prop al componente Content */}
+            <Content content={content} error={error} />{" "}
+            {/* Pasa el estado content como prop al componente Content */}
           </div>
           <footer className="footer mt-auto py-3 bg-dark text-white">
             <div className="container">

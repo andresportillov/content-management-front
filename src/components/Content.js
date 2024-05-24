@@ -1,33 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import contentService from '../services/contentService';
+import React from 'react';
 import '../styles/Content.css';
 
-function Content() {
-  const [contenidos, setContenidos] = useState([]);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await contentService.list();
-        console.log('Fetched content:', response);
-        setContenidos(response || []);
-      } catch (err) {
-        console.error('Error fetching content:', err);
-        setError('Error fetching content. Please try again later.');
-      }
-    };
-
-    fetchData();
-  }, []);
-
+function Content({ content, error }) {
   return (
     <div>
       <h2>Contenidos Disponibles</h2>
       {error && <p>{error}</p>}
       <div className="contenidos-lista">
-        {contenidos && contenidos.length > 0 ? (
-          contenidos.map(contenido => (
+        {content && content.length > 0 ? (
+          content.map(contenido => (
             <div key={contenido._id} className="contenido-item">
               <h3>{contenido.title}</h3>
               <p><strong>Autor:</strong> {contenido.createdBy}</p>
