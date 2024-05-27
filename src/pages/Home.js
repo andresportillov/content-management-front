@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Content from "../components/Content";
 import { useGetContent } from "../hooks/useGetContent";
 import { useSession } from "../hooks/useSession";
 import AddContentForm from "../components/AddContentForm";
+import userService from "../services/userService";
 
 function Search({ onSearch }) {
   const [query, setQuery] = useState("");
@@ -40,14 +41,21 @@ function Search({ onSearch }) {
 function Home() {
   const { content, handleSearch, error, count } = useGetContent();
   const { isLoggedIn, handleLogout, user } = useSession();
+  const [getUser, setUser] = useState({});
 
-  // Crear Endpoints para lectura de datos de usuarios, dentro del hook useSession se deberia obtener los datos del usuario minimamente si es lector o creador
-  // Formulario de agregar un contenido siendo creador
-  // Validar que el contenido creado tenga una categoria valida para la tematica correspondiente
-  // Unit tests
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await userService.getUser();
+        console.log("Fetched content:", response);
+        setUser(response || {});
+      } catch (err) {
+        console.error("Error fetching content:", err);
+      }
+    };
 
-  // Si es usuario es un creador no mostrar los documentos solo texto
-
+    fetchData();
+  }, []);
   return (
     <>
       {isLoggedIn ? (
@@ -55,7 +63,7 @@ function Home() {
           <nav className="navbar navbar-dark bg-dark">
             <div className="container d-flex">
               <Link to="/" className="navbar-brand">
-                Mi App
+                Content App
               </Link>
               <Search onSearch={handleSearch} />
               {user?.role !== "lector" && <AddContentForm />}
@@ -69,14 +77,14 @@ function Home() {
             </div>
           </nav>
           <div className="container">
-            <h2 className="mt-4">Bienvenido a la Página de Inicio</h2>
+            <h2 className="mt-4">{`Bienvenid@ ${getUser.username}`}</h2>
             <div style={{ display: "flex", margin: " 20px 0" }}>
               {count && count.length > 0 ? (
                 count.map((total) => (
                   <div
                     key={total._id} // Asegúrate de tener una key única
                     style={{
-                      background: "gray",
+                      background: "green",
                       marginRight: "8px",
                       borderRadius: "8px",
                       padding: "8px",
