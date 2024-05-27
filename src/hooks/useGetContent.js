@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import contentService from "../services/contentService";
+import topicService from "../services/topicService";
 
 export const useGetContent = () => {
   const [content, setContent] = useState([]);
   const [count, setCount] = useState([]);
+  const [topic, setTopics] = useState([]);
   const [error, setError] = useState("");
 
   const handleSearch = async (query) => {
@@ -43,10 +45,24 @@ export const useGetContent = () => {
     fetchCountData();
   }, []);
 
+  useEffect(() => {
+    const fetchTopicData = async () => {
+      try {
+        const response = await topicService.list();
+        setTopics(response || []);
+      } catch (err) {
+        console.error("Error fetching content:", err);
+      }
+    };
+
+    fetchTopicData();
+  }, []);
+
   return {
     content,
     handleSearch,
     error,
     count,
+    topic,
   };
 };

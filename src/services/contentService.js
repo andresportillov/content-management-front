@@ -26,11 +26,19 @@ const contentService = {
           search: query,
         },
       });
-      console.log("Response:", response.data); // Verifica la respuesta del servidor
+      console.log("Response:", response.data);
       return response.data;
     } catch (error) {
-      console.error("Error searching:", error); // Agrega manejo de errores adicional
-      throw error; // Puedes lanzar el error nuevamente si lo deseas
+      console.error("Error searching:", error);
+      throw error;
+    }
+  },
+  add: async (contentData) => {
+    try {
+      const response = await axiosInstance.post(`${API_URL}/`, contentData);
+      return response.data;
+    } catch (error) {
+      throw error;
     }
   },
 };

@@ -42,14 +42,11 @@ function Home() {
   const { isLoggedIn, handleLogout, user } = useSession();
 
   // Crear Endpoints para lectura de datos de usuarios, dentro del hook useSession se deberia obtener los datos del usuario minimamente si es lector o creador
-  // Si es creador mostrat boton para acceder al formulario de crear contenido
   // Formulario de agregar un contenido siendo creador
   // Validar que el contenido creado tenga una categoria valida para la tematica correspondiente
   // Unit tests
 
   // Si es usuario es un creador no mostrar los documentos solo texto
-
-  // La prueba tecnica es un culo explicando la diferencia entre tematica y categoria
 
   return (
     <>
