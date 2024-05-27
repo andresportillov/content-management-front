@@ -33,9 +33,13 @@ const contentService = {
       throw error;
     }
   },
-  add: async (contentData) => {
+  add: async (formData) => {
     try {
-      const response = await axiosInstance.post(`${API_URL}/`, contentData);
+      const response = await axiosInstance.post(`${API_URL}/`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       return response.data;
     } catch (error) {
       throw error;

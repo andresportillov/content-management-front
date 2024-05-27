@@ -12,6 +12,7 @@ function AddContentForm() {
   const [selectedTopic, setSelectedTopic] = useState("");
   const [title, setTitle] = useState("");
   const [type, setType] = useState("");
+  const [file, setFile] = useState(null); // Nuevo estado para almacenar el archivo
 
   const modalRef = useRef(null);
 
@@ -26,6 +27,11 @@ function AddContentForm() {
     const newUrl = event.target.value;
     setUrl(newUrl);
     setIsValid(validateUrl(newUrl));
+  };
+
+  const handleFileChange = (event) => {
+    const selectedFile = event.target.files[0];
+    setFile(selectedFile);
   };
 
   const handleSelectChange = async (event) => {
@@ -55,17 +61,18 @@ function AddContentForm() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (isValid) {
-      console.log("Valid URL:", url);
-    }
     try {
-      const formData = {
-        title,
-        type,
-        topic: selectedTopic,
-        category: category.name,
-        url,
-      };
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("type", type);
+      formData.append("topic", selectedTopic);
+      formData.append("category", category.name);
+      formData.append("file", file); // Agregar el archivo al FormData
+
+      // Opcional: Verifica el contenido de formData
+      for (let [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
+      }
 
       const response = await contentService.add(formData);
       alert(`Content ${response.title} created successfully!`);
@@ -82,6 +89,7 @@ function AddContentForm() {
     setSelectedTopic("");
     setTitle("");
     setType("");
+    setFile(null); // Restablecer el estado del archivo
   };
 
   useEffect(() => {
@@ -182,6 +190,21 @@ function AddContentForm() {
                         <small className="text-danger">
                           Please enter a valid{" "}
                           {category.name === "video" ? "YouTube" : "Image"} URL.
+                        </small>
+                      )}
+                    </div>
+                  )}
+                  {category.name === "text" && (
+                    <div>
+                      <label>Text File:</label>
+                      <input
+                        type="file"
+                        onChange={handleFileChange}
+                        accept=".txt"
+                      />
+                      {!file && (
+                        <small className="text-danger">
+                          Please select a text file.
                         </small>
                       )}
                     </div>

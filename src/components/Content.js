@@ -2,6 +2,21 @@ import React from "react";
 import "../styles/Content.css";
 
 function Content({ content, error }) {
+  const decodeBase64 = (text) => {
+    try {
+      if (text) {
+        const buffer = new Uint8Array(text);
+        const decoder = new TextDecoder("utf-8");
+        const decode = decoder.decode(buffer);
+
+        return atob(decode);
+      }
+    } catch (e) {
+      console.error("Invalid Base64 string", e);
+      return "Invalid text content";
+    }
+  };
+
   return (
     <div>
       <h2>Contenidos Disponibles</h2>
@@ -34,7 +49,9 @@ function Content({ content, error }) {
                   Tu navegador no soporta la reproducción de videos.
                 </video>
               )}
-              {contenido.type === "text" && <pre>{contenido.text}</pre>}
+              {contenido.type === "text" && (
+                <pre>{decodeBase64(contenido.textContent.data)}</pre>
+              )}
             </div>
           ))
         ) : (
