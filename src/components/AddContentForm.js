@@ -12,9 +12,11 @@ function AddContentForm() {
   const [selectedTopic, setSelectedTopic] = useState("");
   const [title, setTitle] = useState("");
   const [type, setType] = useState("");
+
   const modalRef = useRef(null);
 
   const youtubeRegex = /^(https?:\/\/)?(www\.youtube\.com|youtu\.be)\/.+$/;
+  const imageRegex = /\.(gif|jpe?g|tiff?|png|webp|bmp)$/i;
 
   const handleTopicSelectChange = (event) => {
     setSelectedTopic(event.target.value);
@@ -23,7 +25,7 @@ function AddContentForm() {
   const handleChange = (event) => {
     const newUrl = event.target.value;
     setUrl(newUrl);
-    setIsValid(youtubeRegex.test(newUrl));
+    setIsValid(validateUrl(newUrl));
   };
 
   const handleSelectChange = async (event) => {
@@ -42,10 +44,19 @@ function AddContentForm() {
     }
   };
 
+  const validateUrl = (url) => {
+    if (category.name === "video") {
+      return youtubeRegex.test(url);
+    } else if (category.name === "image") {
+      return imageRegex.test(url);
+    }
+    return true;
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (isValid) {
-      console.log("Valid YouTube URL:", url);
+      console.log("Valid URL:", url);
     }
     try {
       const formData = {
@@ -57,7 +68,7 @@ function AddContentForm() {
       };
 
       const response = await contentService.add(formData);
-      alert(`Contenido ${response.title} creado exitosamente!`);
+      alert(`Content ${response.title} created successfully!`);
     } catch (error) {
       console.log(error);
     }
@@ -136,9 +147,9 @@ function AddContentForm() {
                   defaultValue=""
                 >
                   <option value="">Open this select menu</option>
-                  <option value="image">Imagen</option>
+                  <option value="image">Image</option>
                   <option value="video">Video</option>
-                  <option value="text">Texto</option>
+                  <option value="text">Text</option>
                 </select>
               </div>
               {showAdditionalContent && (
@@ -152,20 +163,25 @@ function AddContentForm() {
                     placeholder="Category"
                     disabled
                   />
-                  {category.name === "video" && (
+                  {(category.name === "video" || category.name === "image") && (
                     <div>
-                      <label>URL YouTube:</label>
+                      <label>
+                        {category.name === "video" ? "YouTube" : "Image"} URL:
+                      </label>
                       <input
                         type="text"
                         className="form-control"
                         id="3"
                         value={url}
                         onChange={handleChange}
-                        placeholder="YouTube URL"
+                        placeholder={`${
+                          category.name === "video" ? "YouTube" : "Image"
+                        } URL`}
                       />
                       {!isValid && (
                         <small className="text-danger">
-                          Please enter a valid YouTube URL.
+                          Please enter a valid{" "}
+                          {category.name === "video" ? "YouTube" : "Image"} URL.
                         </small>
                       )}
                     </div>
