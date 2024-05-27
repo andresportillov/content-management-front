@@ -91,6 +91,13 @@ function Home() {
                       color: "white",
                     }}
                   >
+                    {total.icon && (
+                      <img
+                        src={total.icon}
+                        alt="Icon"
+                        style={{ width: "20px", height: "20px" }}
+                      />
+                    )}
                     {`${total.total}+ ${total._id}`}
                   </div>
                 ))
