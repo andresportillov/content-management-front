@@ -15,6 +15,7 @@ function App() {
         <Route exact path="/register" element={<Register />} />
         {/* Ruta protegida para el componente Home */}
         <Route path="/home" element={isLoggedIn ? <Home /> : <Navigate to="/login" />} />
+
         {/* Redirigir a la página de inicio de sesión si la ruta no coincide */}
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>

@@ -1,9 +1,17 @@
-import axiosInstance from './axiosInstances';
+import axiosInstance from "./axiosInstances";
 
-const API_URL = 'http://127.0.0.1:5000/api/contents';
+const API_URL = "http://127.0.0.1:5000/api/contents";
 
 const contentService = {
-   list: async () => {
+  getCountByCategory: async () => {
+    try {
+      const response = await axiosInstance.get(`${API_URL}/getCountContents`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  list: async () => {
     try {
       const response = await axiosInstance.get(`${API_URL}/`);
       return response.data;
@@ -12,22 +20,27 @@ const contentService = {
     }
   },
   searchByTopicOrName: async (query) => {
-    console.log('Query:', query); // Verifica que la consulta se esté pasando correctamente
     try {
       const response = await axiosInstance.get(`${API_URL}/`, {
         params: {
-          search: query
-        }
+          search: query,
+        },
       });
-      console.log('Response:', response.data); // Verifica la respuesta del servidor
+      console.log("Response:", response.data);
       return response.data;
     } catch (error) {
-      console.error('Error searching:', error); // Agrega manejo de errores adicional
-      throw error; // Puedes lanzar el error nuevamente si lo deseas
+      console.error("Error searching:", error);
+      throw error;
     }
   },
-  
-
+  add: async (contentData) => {
+    try {
+      const response = await axiosInstance.post(`${API_URL}/`, contentData);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
 };
 
 export default contentService;

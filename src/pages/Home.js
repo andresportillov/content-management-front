@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import Content from '../components/Content';
-import contentService from '../services/contentService';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import Content from "../components/Content";
+import { useGetContent } from "../hooks/useGetContent";
+import { useSession } from "../hooks/useSession";
+import AddContentForm from "../components/AddContentForm";
 
 function Search({ onSearch }) {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
 
   const handleChange = (event) => {
     setQuery(event.target.value);
@@ -26,7 +28,9 @@ function Search({ onSearch }) {
           onChange={handleChange}
         />
         <div className="input-group-append">
-          <button type="submit" className="btn btn-outline-success">Search</button>
+          <button type="submit" className="btn btn-outline-success">
+            Search
+          </button>
         </div>
       </div>
     </form>
@@ -34,41 +38,70 @@ function Search({ onSearch }) {
 }
 
 function Home() {
-  const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem('token'));
-  const [content, setContent] = useState([]);
+  const { content, handleSearch, error, count } = useGetContent();
+  const { isLoggedIn, handleLogout, user } = useSession();
 
-  // Función para desloguear al usuario
-  const handleLogout = () => {
-    // Limpiar el token del almacenamiento local
-    localStorage.removeItem('token');
-    // Actualizar el estado para indicar que el usuario ha cerrado sesión
-    setIsLoggedIn(false);
-  };
+  // Crear Endpoints para lectura de datos de usuarios, dentro del hook useSession se deberia obtener los datos del usuario minimamente si es lector o creador
+  // Formulario de agregar un contenido siendo creador
+  // Validar que el contenido creado tenga una categoria valida para la tematica correspondiente
+  // Unit tests
 
-  const handleSearch = async (query) => {
-    try {
-      const response = await contentService.searchByTopicOrName(query);
-      setContent(response); // Actualiza el estado del contenido con la respuesta del servicio
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // Si es usuario es un creador no mostrar los documentos solo texto
 
   return (
     <>
       {isLoggedIn ? (
-        <div style={{ backgroundColor: '#f2f2f2', minHeight: '100vh', padding: '20px' }}>
+        <div style={{ backgroundColor: "#f2f2f2", minHeight: "100vh" }}>
           <nav className="navbar navbar-dark bg-dark">
             <div className="container d-flex">
-              <Link to="/" className="navbar-brand">Mi App</Link>
+              <Link to="/" className="navbar-brand">
+                Mi App
+              </Link>
               <Search onSearch={handleSearch} />
-              <button className="btn btn-outline-light" onClick={handleLogout}>Logout</button>
+              {user?.role !== "lector" && <AddContentForm />}
+              <button
+                type="button"
+                className="btn btn-outline-light"
+                onClick={handleLogout}
+              >
+                Logout
+              </button>
             </div>
           </nav>
           <div className="container">
             <h2 className="mt-4">Bienvenido a la Página de Inicio</h2>
-            <p>Aquí puedes agregar el contenido de tu página de inicio.</p>
-            <Content content={content} /> {/* Pasa el estado content como prop al componente Content */}
+            <div style={{ display: "flex", margin: " 20px 0" }}>
+              {count && count.length > 0 ? (
+                count.map((total) => (
+                  <div
+                    key={total._id} // Asegúrate de tener una key única
+                    style={{
+                      background: "gray",
+                      marginRight: "8px",
+                      borderRadius: "8px",
+                      padding: "8px",
+                      color: "white",
+                    }}
+                  >
+                    {`${total.total}+ ${total._id}`}
+                  </div>
+                ))
+              ) : (
+                <div
+                  style={{
+                    background: "gray",
+                    marginRight: "8px",
+                    borderRadius: "8px",
+                    padding: "8px",
+                    color: "white",
+                  }}
+                >
+                  <p>No Data</p>
+                </div> // Puedes mostrar un mensaje alternativo
+              )}
+            </div>
+            <Content content={content} error={error} />{" "}
+            {/* Pasa el estado content como prop al componente Content */}
           </div>
           <footer className="footer mt-auto py-3 bg-dark text-white">
             <div className="container">
